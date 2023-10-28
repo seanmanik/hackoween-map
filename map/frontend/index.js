@@ -15,7 +15,7 @@ const contractKeys = ['map', 'shop', 'note'];
 const contractNames = {
   'map': '',
   'shop': '',
-  'note': ''
+  'note': 'postednotes.testnet'
 };
 
 const wallets = {};
