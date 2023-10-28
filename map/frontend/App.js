@@ -5,7 +5,7 @@ import Upvote from './pages/Upvote';
 import Redeem from './pages/Redeem';
 import SendNote from './pages/SendNote';
 
-const App = ({ isSignedIn, mapGuestBook, mapWallet, shopGuestBook, shopWallet, noteGuestBook, noteWallet }) => {
+const App = ({ isSignedIn, mapGuestBook, mapWallet, noteGuestBook, noteWallet }) => {
 
   return (
     <Router>
@@ -27,7 +27,7 @@ const App = ({ isSignedIn, mapGuestBook, mapWallet, shopGuestBook, shopWallet, n
           <Upvote noteGuestBook={noteGuestBook} noteWallet={noteWallet} />
         </Route>
         <Route path="/redeem">
-          <Redeem mapGuestBook={shopGuestBook} mapWallet={shopWallet} />
+          <Redeem mapGuestBook={mapGuestBook} mapWallet={mapWallet} />
         </Route>
         <Route path="/send_note">
           <SendNote noteGuestBook={noteGuestBook} noteWallet={noteWallet} />
