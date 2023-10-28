@@ -20,5 +20,8 @@ class NoteList {
   }
 
   @view({})
-  total_messages(): number { return this.messages.length }
+  get_points({ name }: { name: string }): number {
+     return this.messages.length 
+    
+  }
 }

@@ -1,13 +1,9 @@
-export const POINT_ONE = '100000000000000000000000';
+export class User {
+  name: string;
+  score: number;
 
-export class PostedMessage {
-  premium: boolean;
-  sender: string;
-  text: string;
-
-  constructor({ premium, sender, text }: PostedMessage) {
-    this.premium = premium;
-    this.sender = sender;
-    this.text = text;
+  constructor({ name, score }: User) {
+    this.name = name;
+    this.score = score;
   }
 }
