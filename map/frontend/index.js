@@ -30,10 +30,14 @@ const noteGuestBook = new NoteGuestBook({ contractId: contractNames['note'], wal
 // Setup on page load
 window.onload = async () => {
 
-  const isSignedIn = (await Object.values(wallets).startUp()).filter(x => x === false).length === 0;
+  let isSignedIn = true;
+
+  for (const key of contractKeys) {
+    isSignedIn = isSignedIn && await wallets[key].startUp();
+  }
  
   ReactDOM.render(
-    <App isSignedIn={isSignedIn} mapGuestBook={mapGuestBook} mapWallet={wallets['map']} shopGuestBook={shopGuestBook} shopWallet={wallets['shop']} noteGuestBook={noteGuestBook} noteWallet={noteWallet} />,
+    <App isSignedIn={isSignedIn} mapGuestBook={mapGuestBook} mapWallet={wallets['map']} shopGuestBook={shopGuestBook} shopWallet={wallets['shop']} noteGuestBook={noteGuestBook} noteWallet={wallets['note']} />,
     document.getElementById('root')
   );
 }
