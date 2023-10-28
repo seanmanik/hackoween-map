@@ -1,6 +1,6 @@
 import 'regenerator-runtime/runtime';
 import React, { useState, useEffect } from 'react';
-import { BrowserRouter as Router, Route, Link, Switch } from 'react-router-dom';
+import { BrowserRouter as Router, Route, Link } from 'react-router-dom';
 import Upvote from './pages/Upvote';
 import Redeem from './pages/Redeem';
 import SendNote from './pages/SendNote';
@@ -22,17 +22,15 @@ const App = ({ isSignedIn, mapGuestBook, mapWallet, noteGuestBook, noteWallet })
         </li>
       </ul>
 
-      <Switch>
-        <Route path="/upvote">
-          <Upvote noteGuestBook={noteGuestBook} noteWallet={noteWallet} />
-        </Route>
-        <Route path="/redeem">
-          <Redeem mapGuestBook={mapGuestBook} mapWallet={mapWallet} />
-        </Route>
-        <Route path="/send_note">
-          <SendNote noteGuestBook={noteGuestBook} noteWallet={noteWallet} />
-        </Route>
-      </Switch>
+      <Route path="/upvote">
+        <Upvote noteGuestBook={noteGuestBook} noteWallet={noteWallet} />
+      </Route>
+      <Route path="/redeem">
+        <Redeem mapGuestBook={mapGuestBook} mapWallet={mapWallet} />
+      </Route>
+      <Route path="/send_note">
+        <SendNote noteGuestBook={noteGuestBook} noteWallet={noteWallet} />
+      </Route>
 
     </Router>
   )
