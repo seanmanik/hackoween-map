@@ -1,75 +1,94 @@
 import 'regenerator-runtime/runtime';
-import React from 'react';
+import React, { useState, useEffect } from 'react';
+import { BrowserRouter as Router, Route, Link } from 'react-router-dom';
+import Upvote from './pages/Upvote';
+import Redeem from './pages/Redeem';
+import SendNote from './pages/SendNote';
 
-import './assets/global.css';
-
-import { EducationalText, SignInPrompt, SignOutButton } from './ui-components';
-
-
-export default function App({ isSignedIn, contractId, wallet }) {
-  const [valueFromBlockchain, setValueFromBlockchain] = React.useState();
-
-  const [uiPleaseWait, setUiPleaseWait] = React.useState(true);
-
-  // Get blockchian state once on component load
-  React.useEffect(() => {
-    getGreeting()
-      .then(setValueFromBlockchain)
-      .catch(alert)
-      .finally(() => {
-        setUiPleaseWait(false);
-      });
-    }
-  , []);
-
-  /// If user not signed-in with wallet - show prompt
-  if (!isSignedIn) {
-    // Sign-in flow will reload the page later
-    return <SignInPrompt greeting={valueFromBlockchain} onClick={() => wallet.signIn()}/>;
-  }
-
-  function changeGreeting(e) {
-    e.preventDefault();
-    setUiPleaseWait(true);
-    const { greetingInput } = e.target.elements;
-    
-    // use the wallet to send the greeting to the contract
-    wallet.callMethod({ method: 'set_greeting', args: { message: greetingInput.value }, contractId })
-      .then(async () => {return getGreeting();})
-      .then(setValueFromBlockchain)
-      .finally(() => {
-        setUiPleaseWait(false);
-      });
-  }
-
-  function getGreeting(){
-    // use the wallet to query the contract's greeting
-    return wallet.viewMethod({ method: 'get_greeting', contractId })
-  }
+const App = ({ isSignedIn, mapGuestBook, mapWallet, noteGuestBook, noteWallet }) => {
 
   return (
-    <>
-      <SignOutButton accountId={wallet.accountId} onClick={() => wallet.signOut()}/>
-      <main className={uiPleaseWait ? 'please-wait' : ''}>
-        <h1>
-          The contract says: <span className="greeting">{valueFromBlockchain}</span>
-        </h1>
-        <form onSubmit={changeGreeting} className="change">
-          <label>Change greeting:</label>
-          <div>
-            <input
-              autoComplete="off"
-              defaultValue={valueFromBlockchain}
-              id="greetingInput"
-            />
-            <button>
-              <span>Save</span>
-              <div className="loader"></div>
-            </button>
-          </div>
-        </form>
-        <EducationalText/>
-      </main>
-    </>
-  );
-}
+    <Router>
+
+      <ul>
+        <li>
+          <Link to="/upvote">Upvote</Link>
+        </li>
+        <li>
+          <Link to="/redeem">Redeem</Link>
+        </li>
+        <li>
+          <Link to="/send_note">Send Note</Link>
+        </li>
+      </ul>
+
+      <Route path="/upvote">
+        <Upvote noteGuestBook={noteGuestBook} noteWallet={noteWallet} />
+      </Route>
+      <Route path="/redeem">
+        <Redeem mapGuestBook={mapGuestBook} mapWallet={mapWallet} />
+      </Route>
+      <Route path="/send_note">
+        <SendNote noteGuestBook={noteGuestBook} noteWallet={noteWallet} />
+      </Route>
+
+    </Router>
+  )
+
+};
+
+// const App = ({ isSignedIn, guestBook, wallet }) => {
+//   const [messages, setMessages] = useState([]);
+
+//   useEffect(() => {
+//     guestBook.getMessages().then(setMessages);
+//   }, []);
+
+//   onSubmit = async (e) => {
+//     e.preventDefault();
+
+//     const { fieldset, message, donation } = e.target.elements;
+
+//     fieldset.disabled = true;
+
+//     await guestBook.addMessage(message.value, donation.value)
+//     const messages = await guestBook.getMessages()
+
+//     setMessages(messages);
+//     message.value = '';
+//     donation.value = '0';
+//     fieldset.disabled = false;
+//     message.focus();
+//   };
+
+//   const signIn = () => { wallet.signIn() }
+
+//   const signOut = () => { wallet.signOut() }
+
+//   return (
+//     <main>
+//       <table>
+//         <tr>
+//           <td><h1>📖 NEAR Guest Book</h1></td>
+//           <td>{ isSignedIn
+//           ? <button onClick={signOut}>Log out</button>
+//           : <button onClick={signIn}>Log in</button>
+//         }</td>
+//         </tr>
+//       </table>
+
+//       <hr />
+//       { isSignedIn
+//         ? <Form onSubmit={onSubmit} currentAccountId={wallet.accountId} />
+//         : <SignIn/>
+//       }
+
+//       <hr />
+
+//       { !!messages.length && <Messages messages={messages}/> }
+
+//     </main>
+//   );
+// };
+
+export default App;

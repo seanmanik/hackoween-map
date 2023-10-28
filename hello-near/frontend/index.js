@@ -1,23 +1,42 @@
 // React
 import React from 'react';
-import ReactDOM from 'react-dom';
+import ReactDOM from 'react-dom/client';
 import App from './App';
 
 // NEAR
+import { MapGuestBook } from './map-interface';
+import { NoteGuestBook } from './note-interface';
+
 import { Wallet } from './near-wallet';
 
-const CONTRACT_ADDRESS = process.env.CONTRACT_NAME
+const contractKeys = ['map', 'note'];
 
-// When creating the wallet you can optionally ask to create an access key
-// Having the key enables to call non-payable methods without interrupting the user to sign
-const wallet = new Wallet({ createAccessKeyFor: CONTRACT_ADDRESS })
+const contractNames = {
+  'map': 'dev-1698468273316-84663619117753',
+  'note': 'postednotes.testnet'
+};
+
+const wallets = {};
+for (const key of contractKeys) {
+  wallets[key] = new Wallet({ createAccessKeyFor: contractNames[key] })
+}
+
+const mapGuestBook = new MapGuestBook({ contractId: contractNames['map'], walletToUse: wallets['map'] });
+const noteGuestBook = new NoteGuestBook({ contractId: contractNames['note'], walletToUse: wallets['note'] });
 
 // Setup on page load
 window.onload = async () => {
-  const isSignedIn = await wallet.startUp()
+
+  let isSignedIn = true;
+
+  for (const key of contractKeys) {
+    isSignedIn = isSignedIn && await wallets[key].startUp();
+  }
  
-  ReactDOM.render(
-    <App isSignedIn={isSignedIn} contractId={CONTRACT_ADDRESS} wallet={wallet} />,
-    document.getElementById('root')
+  const root = ReactDOM.createRoot(document.getElementById('root'));
+
+  root.render(
+    <App isSignedIn={isSignedIn} mapGuestBook={mapGuestBook} mapWallet={wallets['map']} noteGuestBook={noteGuestBook} noteWallet={wallets['note']} />
   );
+
 }
