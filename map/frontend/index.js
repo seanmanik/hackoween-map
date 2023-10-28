@@ -1,6 +1,6 @@
 // React
 import React from 'react';
-import ReactDOM from 'react-dom';
+import ReactDOM from 'react-dom/client';
 import App from './App';
 
 // NEAR
@@ -33,8 +33,10 @@ window.onload = async () => {
     isSignedIn = isSignedIn && await wallets[key].startUp();
   }
  
-  ReactDOM.render(
-    <App isSignedIn={isSignedIn} mapGuestBook={mapGuestBook} mapWallet={wallets['map']} noteGuestBook={noteGuestBook} noteWallet={wallets['note']} />,
-    document.getElementById('root')
+  const root = ReactDOM.createRoot(document.getElementById('root'));
+
+  root.render(
+    <App isSignedIn={isSignedIn} mapGuestBook={mapGuestBook} mapWallet={wallets['map']} noteGuestBook={noteGuestBook} noteWallet={wallets['note']} />
   );
+
 }
