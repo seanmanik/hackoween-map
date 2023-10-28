@@ -3,27 +3,23 @@ import { User } from './model'
 
 @NearBindgen({})
 class GuestBook {
-  tracker: Vector<User> = new Vector<User>("v-uid");
+  total_points: number = 0;
 
-  // @call({ payableFunction: false })
-  // // Public - Adds a new message.
-  // leave_review({ text }: { text: string }) {
-  //   // If the user attaches more than 0.1N the message is premium
-  //   const premium = near.attachedDeposit() >= BigInt(POINT_ONE);
-  //   const sender = near.predecessorAccountId();
+  @call({ payableFunction: false })
+  add_points({ points }: { points: number }) {
+    const new_point = Number(this.total_points) + Number(points);
+    this.total_points = new_point;
+  }
 
-  //   const message: Review = { premium, sender, text };
-  //   this.messages.push(message);
-  // }
-
-  // @view({})
-  // // Returns an array of messages.
-  // get_messages({ from_index = 0, limit = 10 }: { from_index: number, limit: number }): PostedMessage[] {
-  //   return this.messages.toArray().slice(from_index, from_index + limit);
-  // }
+  @call({ payableFunction: false })
+  redeem_points({ points }: { points: number }) {
+    const point = Number(this.total_points) - Number(points);
+    this.total_points = point;
+  }
 
   @view({})
   get_points(): number { 
-    return 0;
+    return this.total_points;
   }
+
 }
