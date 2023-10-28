@@ -1,27 +1,45 @@
-import { NearBindgen, near, call, view, Vector } from 'near-sdk-js'
-import { POINT_ONE, PostedMessage } from './model'
+import { NearBindgen, near, call, view, Vector, LookupMap } from 'near-sdk-js'
+import { User } from './model'
 
 @NearBindgen({})
 class GuestBook {
-  messages: Vector<PostedMessage> = new Vector<PostedMessage>("v-uid");
+  tracker: Vector<User> = new Vector<User>("v-uid");
 
-  @call({ payableFunction: true })
-  // Public - Adds a new message.
-  add_message({ text }: { text: string }) {
-    // If the user attaches more than 0.1N the message is premium
-    const premium = near.attachedDeposit() >= BigInt(POINT_ONE);
-    const sender = near.predecessorAccountId();
+  @call({ payableFunction: false })
+  add_points({ user, points }: { user: string, points: number }) {
+    const name = user;
+    const score = points; 
+    const person: User = { name, score };
+    for (let i = 0; i < this.tracker.length; i++) {
+      if (this.tracker[i].name === user) {
+          // User with the same name found, update their score.
+          this.tracker[i].score += points;
+          return; // Exit the loop once the user is found and updated.
+      }
+  }
+  this.tracker.push(person);  
+}
 
-    const message: PostedMessage = { premium, sender, text };
-    this.messages.push(message);
+  @call({ payableFunction: false })
+  redeem_points({ user, points }: { user: string, points: number }) {
+    for (let i = 0; i < this.tracker.length; i++) {
+      if (this.tracker[i].name === user) {
+          // User with the same name found, update their score.
+          this.tracker[i].score -= points;
+          return; // Exit the loop once the user is found and updated.
+      }
+  }
   }
 
   @view({})
   // Returns an array of messages.
-  get_messages({ from_index = 0, limit = 10 }: { from_index: number, limit: number }): PostedMessage[] {
-    return this.messages.toArray().slice(from_index, from_index + limit);
+  get_points( { user }: { user:string }): number {
+    for (let i = 0; i < this.tracker.length; i++) {
+      if (this.tracker[i].name === user) {
+          // User with the same name found, update their score.
+          return this.tracker[i].score; // Exit the loop once the user is found and updated.
+      }
+      return 0;
   }
-
-  @view({})
-  total_messages(): number { return this.messages.length }
+}
 }
