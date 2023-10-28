@@ -17,5 +17,7 @@
   "devDependencies": {
     "near-cli": "^3.3.0"
   },
-  "dependencies": {}
+  "dependencies": {
+    "react-router-dom": "^6.17.0"
+  }
 }

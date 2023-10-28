@@ -4,22 +4,36 @@ import ReactDOM from 'react-dom';
 import App from './App';
 
 // NEAR
-import { GuestBook } from './near-interface';
+import { MapGuestBook } from './map-interface';
+import { ShopGuestBook } from './shop-interface';
+import { NoteGuestBook } from './note-interface';
+
 import { Wallet } from './near-wallet';
 
-// When creating the wallet you can choose to create an access key, so the user
-// can skip signing non-payable methods when talking wth the  contract
-const wallet = new Wallet({ createAccessKeyFor: process.env.CONTRACT_NAME })
+const contractKeys = ['map', 'shop', 'note'];
 
-// Abstract the logic of interacting with the contract to simplify your flow
-const guestBook = new GuestBook({ contractId: process.env.CONTRACT_NAME, walletToUse: wallet });
+const contractNames = {
+  'map': '',
+  'shop': '',
+  'note': ''
+};
+
+const wallets = {};
+for (const key of contractKeys) {
+  wallets[key] = new Wallet({ createAccessKeyFor: contractNames[key] })
+}
+
+const mapGuestBook = new MapGuestBook({ contractId: contractNames['map'], walletToUse: wallets['map'] });
+const shopGuestBook = new ShopGuestBook({ contractId: contractNames['shop'], walletToUse: wallets['shop'] });
+const noteGuestBook = new NoteGuestBook({ contractId: contractNames['note'], walletToUse: wallets['note'] });
 
 // Setup on page load
 window.onload = async () => {
-  const isSignedIn = await wallet.startUp()
+
+  const isSignedIn = (await Object.values(wallets).startUp()).filter(x => x === false).length === 0;
  
   ReactDOM.render(
-    <App isSignedIn={isSignedIn} guestBook={guestBook} wallet={wallet} />,
+    <App isSignedIn={isSignedIn} mapGuestBook={mapGuestBook} mapWallet={wallets['map']} shopGuestBook={shopGuestBook} shopWallet={wallets['shop']} noteGuestBook={noteGuestBook} noteWallet={noteWallet} />,
     document.getElementById('root')
   );
 }
